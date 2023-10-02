@@ -76,7 +76,7 @@ function showStats(data) {
         var totalDownloadCount = 0;
 
         // Set title to username/repository
-        document.title = $("#username").val() + "/" + $("#repository").val() + " - " + document.title;
+        document.title = $("#username").val() + "/" + $("#repository").val() + ` - (${$("#repository").val()})` + document.title;
 
         // Sort by creation date of the commit the release is targeting
         data.sort(function (a, b) {
@@ -178,8 +178,9 @@ function showStats(data) {
 function getStats() {
     var user = $("#username").val();
     var repository = $("#repository").val();
+    var page = $("#page").val();
 
-    var url = apiRoot + "repos/" + user + "/" + repository + "/releases";
+    var url = apiRoot + "repos/" + user + "/" + repository + `/releases?per_page=100&page=${page}`;
     $.getJSON(url, showStats).fail(showStats);
 }
 
@@ -197,6 +198,12 @@ $(function() {
             "&repository=" + $("#repository").val();
     });
 
+    $("#page").change(function() {
+        window.location = "?username=" + $("#username").val() +
+            "&repository=" + $("#repository").val() +
+            "&page=" + $("#page").val();
+    });
+
     $('#repository').on('keypress',function(e) {
         if(e.which == 13) {
             window.location = "?username=" + $("#username").val() +
@@ -206,7 +213,8 @@ $(function() {
 
     var username = getQueryVariable("username");
     var repository = getQueryVariable("repository");
-
+    var page = getQueryVariable("page");
+    $("#page").val(page);
     if(username != "" && repository != "") {
         $("#username").val(username);
         $("#repository").val(repository);
